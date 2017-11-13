@@ -1,11 +1,13 @@
 activePalette = []
 currentPalette = 0
+paletteWasShuffled = false
 pressingDown = false
 pixels = []
 PIXEL_SIZE = 20
 CANVAS_SIZE = 400
 canvasChanged = false
 TRANSITION_END = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend'
+evaluatedDrawingState = ""
 
 selectColor = (context) ->
   console.log 'selectColor'
@@ -67,6 +69,7 @@ $(document).keypress (key) ->
 
 $('.shuffle').on 'click', ->
   console.log 'shuffle'
+  paletteWasShuffled = true
   newPalette()
 
 $('.shuffle').hover ->
@@ -120,17 +123,32 @@ drawingIsTooEmpty = ->
   true unless filledPixels.length
 
 drawingIsNotEnoughColors = ->
-  true # bool
+  EMPTY_PIXEL = "rgb(0, 0, 0)"
+  coloredPixels = []
+  pixels.filter (pixel) ->
+    if pixel != EMPTY_PIXEL
+      coloredPixels.push pixel
+  console.log '_.uniq coloredPixels', _.uniq(coloredPixels).length
+  true unless _.uniq(coloredPixels).length >= 3
 
 evaluateDrawing = ->
   getPixels()
+  # update evaluatedDrawingState string and check, to avoid re-rolling/drawing new msgs on the same state
+    # nested if
+      # assign state string to evaluatedDrawingState
   if drawingIsTooEmpty()
     # msg also covers the fully empty state
+    # responses = [], return _.sample
     console.log 'drawing is too empty/empty', pixels
   else if drawingIsNotEnoughColors()
+    # responses = [], return _.sample
     console.log 'not enough pixel colors', pixels
+  else if paletteWasShuffled
+    console.log 'max praise'
+    # shuffled colors being used - max praise :sparkle:
   else
-    console.log 'nice job - praise time', pixels
+    # responses = [], return _.sample # pretty good
+    console.log 'nice job - praise time', pixels 
 
 
 # SAVING

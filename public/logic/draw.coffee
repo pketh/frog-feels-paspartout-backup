@@ -82,7 +82,7 @@ $('.pixel').on "mousedown touchstart", (event) ->
   color = $('.color.active').css('background-color')
   pressingDown = true
   $(@).css("background-color", color)
-  evaluateDrawing()
+  critiqueDrawing()
   unless color is 'black'
     canvasChanged = true
 
@@ -90,7 +90,7 @@ $('.pixel').on "mousemove", (event) ->
   color = $('.color.active').css('background-color')
   if pressingDown
     $(event.target).css("background-color", color)
-    evaluateDrawing()
+    critiqueDrawing()
 
 $('.pixel').on "touchmove", (event) ->
   color = $('.color.active').css('background-color')
@@ -101,14 +101,14 @@ $('.pixel').on "touchmove", (event) ->
     console.log realTarget
     if $(realTarget).hasClass 'pixel'
       $(realTarget).css("background-color", color)
-      evaluateDrawing()
+      critiqueDrawing()
 
 $(document).mouseup (event) ->
   if pressingDown
     pressingDown = false
 
       
-# EVALUATING DRAWING
+# ART CRITIQUE
 
 drawingIsTooEmpty = ->
   EMPTY_PIXEL = "rgb(0, 0, 0)"
@@ -128,27 +128,57 @@ drawingIsNotEnoughColors = ->
   pixels.filter (pixel) ->
     if pixel != EMPTY_PIXEL
       coloredPixels.push pixel
-  console.log '_.uniq coloredPixels', _.uniq(coloredPixels).length
   true unless _.uniq(coloredPixels).length >= 3
 
-evaluateDrawing = ->
-  getPixels()
-  # update evaluatedDrawingState string and check, to avoid re-rolling/drawing new msgs on the same state
-    # nested if
-      # assign state string to evaluatedDrawingState
+getCritique = ->
   if drawingIsTooEmpty()
-    # msg also covers the fully empty state
-    # responses = [], return _.sample
-    console.log 'drawing is too empty/empty', pixels
+    if evaluatedDrawingState != 'drawingIsTooEmpty'
+      evaluatedDrawingState = 'drawingIsTooEmpty'
+      responses = [
+        "Paint with passion"
+        "Don’t hold back"
+        "Fill our hearts with art"
+        "Bare your soul to us"
+      ]
+      _.sample responses
   else if drawingIsNotEnoughColors()
-    # responses = [], return _.sample
-    console.log 'not enough pixel colors', pixels
+    if evaluatedDrawingState != 'drawingIsNotEnoughColors'
+      evaluatedDrawingState = 'drawingIsNotEnoughColors'
+      responses = [
+        "I’d love more colors"
+        "Something is still missing"
+        "I really want to be enlightened more"
+        "The art world needs more colors"
+      ]
+      _.sample responses
   else if paletteWasShuffled
-    console.log 'max praise'
-    # shuffled colors being used - max praise :sparkle:
+    if evaluatedDrawingState != 'paletteWasShuffled'
+      evaluatedDrawingState = 'paletteWasShuffled'
+      responses = [
+        "Fresh like a morning baguette"
+        "You really know how to create real art"
+        "I’m telling everyone about your talent"
+        "A fine addition to my family heirlooms"
+        "Provoking and shocking, I love it"
+      ]
+      _.sample responses
   else
-    # responses = [], return _.sample # pretty good
-    console.log 'nice job - praise time', pixels 
+    if evaluatedDrawingState != 'paletteWasNotShuffled'
+      evaluatedDrawingState = 'paletteWasNotShuffled'
+      responses = [
+        "Try even more colors with (/・・)ノ"
+        "More colors (/・・)ノ will add more passion"
+        "This will tingle my heart with more colors (/・・)ノ"
+      ]
+      _.sample responses
+
+
+critiqueDrawing = ->
+  getPixels()
+  critique = getCritique()
+  if critique
+    element = document.getElementById('critique')
+    element.innerText = critique
 
 
 # SAVING
@@ -249,4 +279,4 @@ $('.save-button').on 'click touchstart', ->
 
 $ ->
   newPalette()
-  evaluateDrawing()
+  critiqueDrawing()

@@ -155,19 +155,19 @@ getCritique = ->
     if evaluatedDrawingState != 'paletteWasShuffled'
       evaluatedDrawingState = 'paletteWasShuffled'
       responses = [
-        "Fresh like a morning baguette"
-        "You really know how to create real art"
-        "I’m telling everyone about your talent"
-        "A fine addition to my family heirlooms"
-        "Provoking and shocking, I love it"
+        "Fresh like a morning baguette!"
+        "You really know how to create real art!"
+        "I’m telling everyone about your talent!"
+        "A fine addition to my family heirlooms!"
+        "Provoking and shocking, I love it!"
       ]
       _.sample responses
   else
     if evaluatedDrawingState != 'paletteWasNotShuffled'
       evaluatedDrawingState = 'paletteWasNotShuffled'
       responses = [
-        "Try even more colors with (/・・)ノ"
-        "More colors (/・・)ノ will add more passion"
+        "I want more radical colors with (/・・)ノ"
+        "Summer colors (/・・)ノ will add more passion"
         "This will tingle my heart with more colors (/・・)ノ"
       ]
       _.sample responses
@@ -241,12 +241,20 @@ drawPixelsOnCanvas = (pixels) ->
     if index < 400
       paintCanvasRow(pixelColor, index, 19)
 
+iterateDrawingsCount = () ->
+  count = 1
+  drawings = localStorage.getItem('drawingsCount')
+  if drawings
+    count = parseInt(drawings) + count
+  localStorage.setItem('drawingsCount', count)
+  
 drawingSaved = () ->
   $('.save-drawing').hide()
   $('.palette').hide()
   $('.drawing').hide()
   $('#canvas').show()
   $('.drawing-saved').show()
+  iterateDrawingsCount()
 
 saveCanvas = () ->
   canvas = document.getElementById("canvas")

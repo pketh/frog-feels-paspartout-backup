@@ -147,7 +147,7 @@ getCritique = ->
       responses = [
         "I’d love more colors"
         "Something is still missing"
-        "I really want to be enlightened more"
+        "Enlighten me with more colors"
         "The art world needs more colors"
       ]
       _.sample responses
@@ -160,6 +160,7 @@ getCritique = ->
         "I’m telling everyone about your talent!"
         "A fine addition to my family heirlooms!"
         "Provoking and shocking, I love it!"
+        "This touches my soul!"
       ]
       _.sample responses
   else
@@ -168,7 +169,8 @@ getCritique = ->
       responses = [
         "I want more radical colors with (/・・)ノ"
         "Summer colors (/・・)ノ will add more passion"
-        "This will tingle my heart with more colors (/・・)ノ"
+        "With even more colors, this will be wow (/・・)ノ"
+        "Click (/・・)ノ for even more colors"
       ]
       _.sample responses
 

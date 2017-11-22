@@ -160,7 +160,8 @@ getCritique = ->
         "I’m telling everyone about your talent!"
         "A fine addition to my family heirlooms!"
         "Provoking and shocking, I love it!"
-        "This touches my soul!"
+        "This touches my soul, bravo!"
+        "I hope you achieve all your dreams!"
       ]
       _.sample responses
   else

@@ -1,11 +1,13 @@
 activePalette = []
 currentPalette = 0
+paletteWasShuffled = false
 pressingDown = false
 pixels = []
 PIXEL_SIZE = 20
 CANVAS_SIZE = 400
 canvasChanged = false
 TRANSITION_END = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend'
+evaluatedDrawingState = ""
 
 selectColor = (context) ->
   console.log 'selectColor'
@@ -67,6 +69,7 @@ $(document).keypress (key) ->
 
 $('.shuffle').on 'click', ->
   console.log 'shuffle'
+  paletteWasShuffled = true
   newPalette()
 
 $('.shuffle').hover ->
@@ -79,7 +82,7 @@ $('.pixel').on "mousedown touchstart", (event) ->
   color = $('.color.active').css('background-color')
   pressingDown = true
   $(@).css("background-color", color)
-  evaluateDrawing()
+  critiqueDrawing()
   unless color is 'black'
     canvasChanged = true
 
@@ -87,7 +90,7 @@ $('.pixel').on "mousemove", (event) ->
   color = $('.color.active').css('background-color')
   if pressingDown
     $(event.target).css("background-color", color)
-    evaluateDrawing()
+    critiqueDrawing()
 
 $('.pixel').on "touchmove", (event) ->
   color = $('.color.active').css('background-color')
@@ -98,14 +101,14 @@ $('.pixel').on "touchmove", (event) ->
     console.log realTarget
     if $(realTarget).hasClass 'pixel'
       $(realTarget).css("background-color", color)
-      evaluateDrawing()
+      critiqueDrawing()
 
 $(document).mouseup (event) ->
   if pressingDown
     pressingDown = false
 
       
-# EVALUATING DRAWING
+# ART CRITIQUE
 
 drawingIsTooEmpty = ->
   EMPTY_PIXEL = "rgb(0, 0, 0)"
@@ -120,17 +123,65 @@ drawingIsTooEmpty = ->
   true unless filledPixels.length
 
 drawingIsNotEnoughColors = ->
-  true # bool
+  EMPTY_PIXEL = "rgb(0, 0, 0)"
+  coloredPixels = []
+  pixels.filter (pixel) ->
+    if pixel != EMPTY_PIXEL
+      coloredPixels.push pixel
+  true unless _.uniq(coloredPixels).length >= 3
 
-evaluateDrawing = ->
-  getPixels()
+getCritique = ->
   if drawingIsTooEmpty()
-    # msg also covers the fully empty state
-    console.log 'drawing is too empty/empty', pixels
+    if evaluatedDrawingState != 'drawingIsTooEmpty'
+      evaluatedDrawingState = 'drawingIsTooEmpty'
+      responses = [
+        "Paint with passion"
+        "Don’t hold back"
+        "Fill our hearts with art"
+        "Bare your soul to us"
+      ]
+      _.sample responses
   else if drawingIsNotEnoughColors()
-    console.log 'not enough pixel colors', pixels
+    if evaluatedDrawingState != 'drawingIsNotEnoughColors'
+      evaluatedDrawingState = 'drawingIsNotEnoughColors'
+      responses = [
+        "I’d love more colors"
+        "Something is still missing"
+        "Enlighten me with more colors"
+        "The art world needs more colors"
+      ]
+      _.sample responses
+  else if paletteWasShuffled
+    if evaluatedDrawingState != 'paletteWasShuffled'
+      evaluatedDrawingState = 'paletteWasShuffled'
+      responses = [
+        "Fresh like a morning baguette!"
+        "You really know how to create real art!"
+        "I’m telling everyone about your talent!"
+        "A fine addition to my family heirlooms!"
+        "Provoking and shocking, I love it!"
+        "This touches my soul, bravo!"
+        "I hope you achieve all your dreams!"
+      ]
+      _.sample responses
   else
-    console.log 'nice job - praise time', pixels
+    if evaluatedDrawingState != 'paletteWasNotShuffled'
+      evaluatedDrawingState = 'paletteWasNotShuffled'
+      responses = [
+        "I want more radical colors with (/・・)ノ"
+        "Summer colors (/・・)ノ will add more passion"
+        "With even more colors, this will be wow (/・・)ノ"
+        "Click (/・・)ノ for even more colors"
+      ]
+      _.sample responses
+
+
+critiqueDrawing = ->
+  getPixels()
+  critique = getCritique()
+  if critique
+    element = document.getElementById('critique')
+    element.innerText = critique
 
 
 # SAVING
@@ -193,12 +244,20 @@ drawPixelsOnCanvas = (pixels) ->
     if index < 400
       paintCanvasRow(pixelColor, index, 19)
 
+iterateDrawingsCount = () ->
+  count = 1
+  drawings = localStorage.getItem('drawingsCount')
+  if drawings
+    count = parseInt(drawings) + count
+  localStorage.setItem('drawingsCount', count)
+  
 drawingSaved = () ->
   $('.save-drawing').hide()
   $('.palette').hide()
   $('.drawing').hide()
   $('#canvas').show()
   $('.drawing-saved').show()
+  iterateDrawingsCount()
 
 saveCanvas = () ->
   canvas = document.getElementById("canvas")
@@ -231,4 +290,4 @@ $('.save-button').on 'click touchstart', ->
 
 $ ->
   newPalette()
-  evaluateDrawing()
+  critiqueDrawing()
